@@ -1,5 +1,7 @@
 import React, { useState } from 'react'
 import { AiFillEyeInvisible, AiFillEye } from 'react-icons/ai'
+import { Link } from 'react-router-dom';
+import OAuth from '../components/OAuth';
 
 export default function SignIn() {
     const [showPassword, setShowPassword] = useState(false)
@@ -26,7 +28,7 @@ export default function SignIn() {
             <div className='w-full md:w-[67%] lg:w-[40%] lg:ml-20'>
                 <form>
                     <input placeholder='Email Address'
-                    className='w-full px-4 py-2 text-xl rounded bg-white border-gray-300 transition ease-in-out text-gray-700'
+                    className='w-full px-4 py-2 text-xl rounded bg-white border-gray-300 transition ease-in-out text-gray-700 mb-5'
                     type="email" name="" id="email" value={email} onChange={onChange} />
 
                     
@@ -39,7 +41,21 @@ export default function SignIn() {
                         <AiFillEye  className='absolute right-3 top-3 text-xl cursor-pointer'
                         onClick={() => setShowPassword((prevState) => !prevState)}/> }
                     </div>
+                    <div className='flex items-center justify-between text-sm sm:text-lg whitespace-nowrap'>
+                        <p>Don't have an account? <Link to="/sign-up" className='text-red-600 hover:text-red-700 transition duration-200 ease-in-out'>Sign Up</Link></p>
+                        <p>
+                            <Link to="/forgot-password" className='text-blue-600 hover:text-blue-700 transition duration-200 ease-in-out'>Forgot Password?</Link>
+                        </p>
+                    </div>
+                    <button 
+                    className='mt-5 w-full bg-blue-600 text-white px-7 py-3 text-sm font-medium uppercase rounded shadow-md hover:bg-blue-700 transition duration-200 ease-in-out hover:shadow-lg active:bg-blue-800'>Submit</button>
+                    <div className='my-4 before:border-t flex before:flex-1 items-center before:border-gray-300
+                    after:border-t after:flex-1 after:border-gray-300'>
+                        <p className="text-center font-semibold mx-4">OR</p>
+                    </div>
+                    <OAuth/>
                 </form>
+
             </div>
         </div>
     </section>
