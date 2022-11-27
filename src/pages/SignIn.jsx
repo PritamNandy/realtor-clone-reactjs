@@ -32,7 +32,7 @@ export default function SignIn() {
                     type="email" name="" id="email" value={email} onChange={onChange} />
 
                     
-                    <div className='relative'>
+                    <div className='relative mb-5'>
                         <input placeholder='*****'
                         className='w-full px-4 py-2 text-xl rounded bg-white border-gray-300 transition ease-in-out text-gray-700'
                         type={showPassword ? 'text' : "password"} name="" id="password" value={password} onChange={onChange} />
