@@ -1,6 +1,9 @@
 import React, { useState } from 'react'
-import { getAuth } from 'firebase/auth'
+import { getAuth, updateProfile } from 'firebase/auth'
 import { useNavigate } from 'react-router';
+import { toast } from 'react-toastify';
+import { db } from "../firebase";
+import { doc, updateDoc } from 'firebase/firestore'
 
 export default function Profile() {
   const navigate = useNavigate()
@@ -21,8 +24,25 @@ export default function Profile() {
       [e.target.id]: e.target.value
     }))
   }
-  function onSubmit() {
+  async function onSubmit() {
+    try {
+      if(auth.currentUser.displayName !== name) {
+        //Update Display Username
+        await updateProfile(auth.currentUser, {
+          displayName: name
+        })
+      }
 
+      //Update Name in the Firestore
+      const docRef = doc(db, 'users', auth.currentUser.uid)
+      await updateDoc(docRef, {
+        name
+      })
+
+      toast.success("Profile Details Updated")
+    } catch (error) {
+      toast.error('Something went wrong!')
+    }
   }
   return (
     <>
@@ -47,7 +67,10 @@ export default function Profile() {
                   <span 
                   className='text-red-600 hover:text-red-700 active:text-red-800 transition duration-200 ease-in-out
                   ml-1 cursor-pointer font-semibold'
-                  onClick={() => setChangeDetail((prevState) => !prevState)}>
+                  onClick={() => {
+                    changeDetail && onSubmit();
+                    setChangeDetail((prevState) => !prevState);
+                  }}>
                     {changeDetail ? 'Apply Change' : 'Edit'}</span>
                 </p>
                 <p className='text-blue-600 hover:text-blue-700 active:text-blue-800 transition duration-200 ease-in-out cursor-pointer font-semibold' onClick={onLogout}>Sign out</p>
