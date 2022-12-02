@@ -1,10 +1,15 @@
 import React, { useState } from 'react'
 import { toast } from 'react-toastify';
 import Spinner from '../components/Spinner';
+import { getStorage, uploadBytesResumable, getDownloadURL, ref } from "firebase/storage";
+import { getAuth } from 'firebase/auth';
+import { v4 as uuidv4 } from 'uuid';
+import { serverTimestamp } from "firebase/firestore";
 
 export default function CreateListing() {
+    const auth = getAuth();
     const [loading, setLoading] = useState(false);
-    const [geoLocation, setGeoLocation] = useState(true);
+    const [geoLocationEnabled, setGeoLocationEnabled] = useState(true);
     const [formData, setFormData] = useState({
         type: 'rent',
         name: '',
@@ -19,7 +24,7 @@ export default function CreateListing() {
         discounted_price: 0,
         lat: 0,
         lng: 0,
-        images: []
+        images: {}
     })
     const {type, name, beds, bath, parking, furnished, address,
          description, offer, regular_price, discounted_price, lat, lng, images} = formData
@@ -33,17 +38,18 @@ export default function CreateListing() {
         if(e.target.files) {
             setFormData((prevState) => ({
                 ...prevState,
-                images: e.target.value
+                images: e.target.files
             }))
-        } else {
+        } 
+        if(!e.target.files) {
             setFormData((prevState) => ({
                 ...prevState,
                 [e.target.id]: boolean ?? e.target.value
             }))
         }
-        
     }
-    function onSubmit(e) {
+
+    async function onSubmit(e) {
         e.preventDefault();
         setLoading(true)
         if(discounted_price >= regular_price) {
@@ -53,8 +59,84 @@ export default function CreateListing() {
         if(images.length > 6) {
             setLoading(false)
             toast.error('Maximum 6 images are allowed')
+            console.log(images.length)
         }
+        let geoLocation = {}
+        let location 
+        if (geoLocationEnabled) {
+            const response = await fetch(`https://maps.googleapis.com/maps/api/geocode/json?address=${address}&key=${process.env.REACT_APP_GOOGLE_GEOCODE_API_KEY}`)
+            const data = await response.json()
+            console.log(data.status)
+            geoLocation.lat = data.results[0]?.geometry.location.lat ?? 0;
+            geoLocation.lng = data.results[0]?.geometry.location.lat ?? 0;
+
+            location = data.status === 'ZERO_RESULTS' && undefined;
+            if(location === undefined) {
+                setLoading(false)
+                toast.error('Enter a correct address')
+            }
+        } else {
+            geoLocation.lat = lat;
+            geoLocation.lng = lng;
+        }
+
+        async function storeImage(image) {
+            return new Promise((resolve, reject) => {
+                const storage = getStorage();
+                const filename = `${auth.currentUser.uid}-${image.name}-${uuidv4()}`
+                const storageRef = ref(storage, filename);
+                const uploadTask = uploadBytesResumable(storageRef, image);
+
+                uploadTask.on('state_changed', 
+                    (snapshot) => {
+                        // Observe state change events such as progress, pause, and resume
+                        // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
+                        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                        console.log('Upload is ' + progress + '% done');
+                        switch (snapshot.state) {
+                        case 'paused':
+                            console.log('Upload is paused');
+                            break;
+                        case 'running':
+                            console.log('Upload is running');
+                            break;
+                        }
+                    }, 
+                    (error) => {
+                        reject(error)
+                    }, 
+                    () => {
+                        // Handle successful uploads on complete
+                        // For instance, get the download URL: https://firebasestorage.googleapis.com/...
+                        getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+                            resolve(downloadURL);
+                        });
+                    }
+                );
+            })
+        }
+
+        const imgUrls = await Promise.all(
+            [...images].map((image) => storeImage(image))).catch((error) => {
+                console.log(error)
+                setLoading(false)
+                toast.error("Images not uploaded")
+                return;
+            }
+        );
+
+        const formDataCopy = {
+            ...formData,
+            imgUrls,
+            geoLocation,
+            timestamp:serverTimestamp()
+        }
+        setLoading(false)
+        console.log(imgUrls)
+        delete formDataCopy.images;
+        !formDataCopy.offer && delete formDataCopy.discounted_price;
     }
+
     if(loading) {
         return <Spinner/>
     } else {
@@ -206,7 +288,7 @@ export default function CreateListing() {
                         transition ease-in-out duration-150 px-4 py-2 text-gray-700 border border-gray-300
                         focus:bg-white active:bg-white' />
         
-                        { geoLocation && (
+                        { geoLocationEnabled && (
                             <div className='flex space-x-6 mb-6'>
                                 <div>
                                     <p
@@ -216,7 +298,7 @@ export default function CreateListing() {
                                     value={lat}
                                     placeholder="1"
                                     onChange={onChange}
-                                    required={geoLocation}
+                                    required={geoLocationEnabled}
                                     className="mt-2 w-full px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded
                                     transition ease-in-out duration-150 shadow-md focus:bg-white active:bg-white
                                     focus:shadow-lg active:shadow-lg" />
@@ -228,7 +310,7 @@ export default function CreateListing() {
                                     id='lng'
                                     value={lng}
                                     onChange={onChange}
-                                    required={geoLocation}
+                                    required={geoLocationEnabled}
                                     className="mt-2 w-full px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded
                                     transition ease-in-out duration-150 shadow-md focus:bg-white active:bg-white
                                     focus:shadow-lg active:shadow-lg" />
