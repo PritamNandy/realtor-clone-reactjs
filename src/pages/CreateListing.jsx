@@ -4,9 +4,12 @@ import Spinner from '../components/Spinner';
 import { getStorage, uploadBytesResumable, getDownloadURL, ref } from "firebase/storage";
 import { getAuth } from 'firebase/auth';
 import { v4 as uuidv4 } from 'uuid';
-import { serverTimestamp } from "firebase/firestore";
+import { addDoc, collection, serverTimestamp } from "firebase/firestore";
+import { db } from "../firebase";
+import { Navigate, useNavigate } from 'react-router';
 
 export default function CreateListing() {
+    const navigate = useNavigate();
     const auth = getAuth();
     const [loading, setLoading] = useState(false);
     const [geoLocationEnabled, setGeoLocationEnabled] = useState(true);
@@ -131,10 +134,15 @@ export default function CreateListing() {
             geoLocation,
             timestamp:serverTimestamp()
         }
-        setLoading(false)
         console.log(imgUrls)
         delete formDataCopy.images;
+        delete formDataCopy.lat;
+        delete formDataCopy.lng;
         !formDataCopy.offer && delete formDataCopy.discounted_price;
+        const docRef = await addDoc(collection(db, "listings"), formDataCopy);
+        setLoading(false)
+        toast.success('Listing Created!')
+        navigate(`/category/${formDataCopy.type}/${docRef.id}`)
     }
 
     if(loading) {
