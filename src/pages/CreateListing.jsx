@@ -6,7 +6,7 @@ import { getAuth } from 'firebase/auth';
 import { v4 as uuidv4 } from 'uuid';
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { db } from "../firebase";
-import { Navigate, useNavigate } from 'react-router';
+import { useNavigate } from 'react-router';
 
 export default function CreateListing() {
     const navigate = useNavigate();
@@ -132,7 +132,8 @@ export default function CreateListing() {
             ...formData,
             imgUrls,
             geoLocation,
-            timestamp:serverTimestamp()
+            timestamp:serverTimestamp(),
+            userRef: auth.currentUser.uid
         }
         console.log(imgUrls)
         delete formDataCopy.images;
@@ -290,7 +291,7 @@ export default function CreateListing() {
                         placeholder="Property Address"
                         onChange={onChange}
                         minLength="10"
-                        maxLength="32"
+                        maxLength="100"
                         required
                         className='mt-2 w-full rounded shadow-md hover:shadow-lg focus:shadow-lg active:shadow-lg
                         transition ease-in-out duration-150 px-4 py-2 text-gray-700 border border-gray-300
