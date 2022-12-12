@@ -62,10 +62,11 @@ export default function Profile() {
       querySnap.forEach((doc) => {
         return listings.push({
             id: doc.id,
-            data: doc.data
+            data: doc.data()
           })
       });
       setListings(listings)
+      console.log(listings)
       setLoading(false)
     }
     fetchUserListings();
@@ -117,7 +118,7 @@ export default function Profile() {
             </button>
           </div>
       </section>
-      <div>
+      <div className='max-w-6xl px-3 pt-6'>
         {!loading && listings.length > 0 && 
           <>
             <h2 className='text-2xl text-center font-semibold uppercase'>My Listings</h2>
