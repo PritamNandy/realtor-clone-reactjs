@@ -34,6 +34,14 @@ export default function EditListing() {
     const {type, name, beds, bath, parking, furnished, address,
          description, offer, regular_price, discounted_price, lat, lng, images} = formData
     const params = useParams();
+
+    useEffect(() => {
+      if(listing && listing.userRef !== auth.currentUser.uid) {
+        toast.error('You can\'t edit this listing')
+        navigate("/")
+      }
+    }, [])
+
     useEffect(() => {
           setLoading(true)
           async function fetchListing() {
@@ -51,12 +59,7 @@ export default function EditListing() {
           fetchListing()
     }, [navigate, params.listingId])
 
-    useEffect(() => {
-      if(listing && listing.userRef !== auth.currentUser.uid) {
-        toast.error('You can\'t edit this listing')
-        navigate("/")
-      }
-    }, [])
+
     function onChange(e) {
         let boolean = null;
         if(e.target.value === "true") {
