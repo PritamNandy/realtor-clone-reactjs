@@ -40,7 +40,7 @@ export default function EditListing() {
         toast.error('You can\'t edit this listing')
         navigate("/")
       }
-    }, [])
+    }, [auth.currentUser.uid, listing, navigate])
 
     useEffect(() => {
           setLoading(true)
