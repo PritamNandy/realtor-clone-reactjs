@@ -8,10 +8,12 @@ import Spinner from '../components/Spinner';
 import "swiper/css/bundle"
 import { Swiper, SwiperSlide } from "swiper/react";
 import SwiperCore, {EffectFade, Autoplay, Navigation, Pagination} from "swiper";
+import { FaShare } from "react-icons/fa"
 
 export default function Listing() {
   const [listing, setListing] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [shareLinkCopied, setShareLinkCopied] = useState(false)
   SwiperCore.use([Autoplay, Navigation, Pagination])
   const params = useParams();
   useEffect(() => {
@@ -54,6 +56,20 @@ export default function Listing() {
           </SwiperSlide>
         ))}
       </Swiper>
+      <div className='fixed top-[13%] right-[3%] z-10 bg-white cursor-pointer
+      h-12 w-12 border-2 border-gray-400 rounded-full flex justify-center items-center'
+      onClick={() => {
+        navigator.clipboard.writeText(window.location.href)
+        setShareLinkCopied(true)
+        setTimeout(() => setShareLinkCopied(false), 2000)
+      }}>
+          <FaShare 
+          className="text-lg text-slate-500"/>
+      </div>
+      { shareLinkCopied && (
+        <p className='fixed top-[20%] right-[3%] font-semibold z-10 border-2 border-gray-200
+        bg-white transition ease-in-out duration-150 rounded px-2'>Link Copied</p>
+      )}
     </main>
   )
 }
