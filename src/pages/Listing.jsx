@@ -9,11 +9,15 @@ import "swiper/css/bundle"
 import { Swiper, SwiperSlide } from "swiper/react";
 import SwiperCore, {EffectFade, Autoplay, Navigation, Pagination} from "swiper";
 import { FaShare, FaSearchLocation, FaBed, FaBath, FaParking, FaChair } from "react-icons/fa"
+import { getAuth } from 'firebase/auth';
+import Contact from '../components/Contact';
 
 export default function Listing() {
+  const auth = getAuth();
   const [listing, setListing] = useState(null)
   const [loading, setLoading] = useState(true)
   const [shareLinkCopied, setShareLinkCopied] = useState(false)
+  const [contactLandLord, setContactLandLord] = useState(false)
   SwiperCore.use([Autoplay, Navigation, Pagination])
   const params = useParams();
   useEffect(() => {
@@ -73,7 +77,7 @@ export default function Listing() {
 
       <div
       className='flex flex-col md:flex-row max-w-6xl lg:mx-auto p-4 rounded-lg border-3 bg-white shadow-lg'>
-        <div className='w-full h-[200px] lg-[400px]'>
+        <div className='w-full h-[200px] lg-[400px] pr-4'>
           <p className='font-bold text-2xl text-blue-900 '>
             {listing.name} - ${listing.offer ? 
           listing.discounted_price
@@ -137,6 +141,21 @@ export default function Listing() {
               {listing.furnished === true ? 'Furnished' : 'No Furnished'}
             </li>
           </ul>
+          {listing.userRef !== auth.currentUser.uid && !contactLandLord && (
+            <div className='mt-4'>
+              <button
+              onClick={()=>(
+                setContactLandLord(true)
+              )}
+            className='bg-blue-700 text-white px-7 py-3 rounded font-medium w-full shadow-md hover:bg-blue-900
+            hover:shadow-lg focus:bg-blue-900 focus:shadow-xl text-center transition duration-150 ease-in-out'>
+              Contact Landlord
+            </button>
+            </div>
+          )}
+          {contactLandLord && (
+              <Contact />
+          )}
         </div>
         <div className='bg-blue-300 w-full h-[200px] lg-[400px]'></div>
       </div>
