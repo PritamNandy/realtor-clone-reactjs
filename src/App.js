@@ -7,7 +7,6 @@ import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
 import Header from "./components/Header";
 import 'react-toastify/dist/ReactToastify.css';
-import 'swiper/css';
 import { ToastContainer } from 'react-toastify';
 import PrivateRoute from "./components/PrivateRoute";
 import CreateListing from "./pages/CreateListing";
