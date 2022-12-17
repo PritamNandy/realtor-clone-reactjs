@@ -77,7 +77,7 @@ export default function Listing() {
 
       <div
       className='flex flex-col md:flex-row max-w-6xl lg:mx-auto p-4 rounded-lg border-3 bg-white shadow-lg'>
-        <div className='w-full h-[200px] lg-[400px] pr-4'>
+        <div className='w-full pr-4'>
           <p className='font-bold text-2xl text-blue-900 '>
             {listing.name} - ${listing.offer ? 
           listing.discounted_price
@@ -115,7 +115,7 @@ export default function Listing() {
             {listing.description}
           </p>
           <ul
-          className='flex space-x-3 lg:space-x-10 text-sm font-semibold items-center'>
+          className='flex space-x-3 lg:space-x-10 text-sm font-semibold items-center mb-6'>
             <li
             className='flex items-center whitespace-nowrap'>
               <FaBed 
@@ -154,7 +154,10 @@ export default function Listing() {
             </div>
           )}
           {contactLandLord && (
-              <Contact />
+              <Contact 
+                userRef={listing.userRef}
+                listing = {listing}
+              />
           )}
         </div>
         <div className='bg-blue-300 w-full h-[200px] lg-[400px]'></div>
