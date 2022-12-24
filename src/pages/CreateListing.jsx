@@ -135,7 +135,7 @@ export default function CreateListing() {
             timestamp:serverTimestamp(),
             userRef: auth.currentUser.uid
         }
-        console.log(imgUrls)
+        
         delete formDataCopy.images;
         delete formDataCopy.lat;
         delete formDataCopy.lng;
