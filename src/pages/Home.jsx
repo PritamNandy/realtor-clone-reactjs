@@ -110,7 +110,7 @@ export default function Home() {
         {rentListings && rentListings.length > 0 && (
           <div className='m-2 mb-3'>
             <h2 className='px-2 mt-6 uppercase font-bold text-2xl'>Recent Rents</h2>
-            <Link to="/rent">
+            <Link to="/category/rent">
               <p className='px-2 text-sm font-semibold text-blue-500 hover:text-blue-800 transition duration-150 ease-in-out'>Show more offers</p>
             </Link>
             <ul className='grid sm:grid-cols-2 md:grid-cols-4'>
@@ -131,7 +131,7 @@ export default function Home() {
         {sellListings && sellListings.length > 0 && (
           <div className='m-2 mb-3'>
             <h2 className='px-2 mt-6 uppercase font-bold text-2xl'>Recent Sales</h2>
-            <Link to="/sale">
+            <Link to="/category/sale">
               <p className='px-2 text-sm font-semibold text-blue-500 hover:text-blue-800 transition duration-150 ease-in-out'>Show more offers</p>
             </Link>
             <ul className='grid sm:grid-cols-2 md:grid-cols-4'>
