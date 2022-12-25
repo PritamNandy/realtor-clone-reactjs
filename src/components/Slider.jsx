@@ -5,7 +5,7 @@ import { useEffect } from 'react'
 import Spinner from '../components/Spinner'
 import { db } from '../firebase'
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { Navigation, Pagination, Scrollbar, A11y, EffectFade, Autoplay } from 'swiper';
+import { Navigation, Pagination, EffectFade, Autoplay } from 'swiper';
 import 'swiper/css/bundle'
 import { useNavigate } from 'react-router'
 
