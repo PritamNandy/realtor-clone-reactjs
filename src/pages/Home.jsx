@@ -41,9 +41,9 @@ export default function Home() {
         const listingsRef = collection(db, 'listings')
         const q = query(listingsRef, where("type", '==', 'rent'), orderBy('timestamp', 'desc'), limit(4))
         const docSnap = await getDocs(q)
-        let offerListings = [];
+        let rentListings = [];
         docSnap.forEach((data) => {
-          offerListings.push({
+          rentListings.push({
             id: data.id,
             data: data.data() 
           })
@@ -64,17 +64,17 @@ export default function Home() {
     async function fetchListings() {
       try {
         const listingsRef = collection(db, 'listings')
-        const q = query(listingsRef, where("type", '==', 'sell'), orderBy('timestamp', 'desc'), limit(4))
+        const q = query(listingsRef, where("type", '==', 'sale'), orderBy('timestamp', 'desc'), limit(4))
         const docSnap = await getDocs(q)
-        let offerListings = [];
+        let sellListings = [];
         docSnap.forEach((data) => {
-          offerListings.push({
+          sellListings.push({
             id: data.id,
             data: data.data() 
           })
         })
-        setSellListings(offerListings) 
-        console.log(offerListings)
+        setSellListings(sellListings) 
+        console.log(sellListings)
       } catch (error) {
         console.log(error)
       }
@@ -94,6 +94,48 @@ export default function Home() {
             </Link>
             <ul className='grid sm:grid-cols-2 md:grid-cols-4'>
               {offerListings.map((listing) => (
+                <li>
+                  <ListingItem 
+                  listing = {listing.data}
+                  id = {listing.id}
+                  />
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </div>
+
+      <div className='max-w-6xl mx-auto pt-4 space-y-6'>
+        {rentListings && rentListings.length > 0 && (
+          <div className='m-2 mb-3'>
+            <h2 className='px-2 mt-6 uppercase font-bold text-2xl'>Recent Rents</h2>
+            <Link to="/rent">
+              <p className='px-2 text-sm font-semibold text-blue-500 hover:text-blue-800 transition duration-150 ease-in-out'>Show more offers</p>
+            </Link>
+            <ul className='grid sm:grid-cols-2 md:grid-cols-4'>
+              {rentListings.map((listing) => (
+                <li>
+                  <ListingItem 
+                  listing = {listing.data}
+                  id = {listing.id}
+                  />
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </div>
+
+      <div className='max-w-6xl mx-auto pt-4 space-y-6'>
+        {sellListings && sellListings.length > 0 && (
+          <div className='m-2 mb-3'>
+            <h2 className='px-2 mt-6 uppercase font-bold text-2xl'>Recent Sales</h2>
+            <Link to="/sale">
+              <p className='px-2 text-sm font-semibold text-blue-500 hover:text-blue-800 transition duration-150 ease-in-out'>Show more offers</p>
+            </Link>
+            <ul className='grid sm:grid-cols-2 md:grid-cols-4'>
+              {sellListings.map((listing) => (
                 <li>
                   <ListingItem 
                   listing = {listing.data}
